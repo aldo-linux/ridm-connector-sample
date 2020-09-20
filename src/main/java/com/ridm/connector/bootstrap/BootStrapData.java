@@ -37,6 +37,7 @@ public class BootStrapData implements CommandLineRunner {
         this.groupRepository = groupRepository;
     }
 
+
     @Override
     public void run(String... args) throws Exception {
         Connection conn = new Connection("ldap", "ldap.tirasa.net.LDAPConnector.jar", "{prop1: something}");
@@ -73,13 +74,13 @@ public class BootStrapData implements CommandLineRunner {
         System.out.println("Number of accounts: " + accountRepository.count());
         System.out.println("Number of groups: " + groupRepository.count());
 
-//        this.template.send("myTopic", "foo1");
-//        this.template.send("myTopic", "foo2");
-//        this.template.send("myTopic", "foo3");
-//        latch.await(60, TimeUnit.SECONDS);
-//        logger.info("All received");
+        this.template.send("myTopic", "foo1");
+        this.template.send("myTopic", "foo2");
+        this.template.send("myTopic", "foo3");
+        latch.await(60, TimeUnit.SECONDS);
+        logger.info("All received");
     }
-/*
+
     //////
     public static Logger logger = Logger.getLogger(String.valueOf(BootStrapData.class));
 
@@ -94,5 +95,4 @@ public class BootStrapData implements CommandLineRunner {
         latch.countDown();
     }
 
- */
 }
