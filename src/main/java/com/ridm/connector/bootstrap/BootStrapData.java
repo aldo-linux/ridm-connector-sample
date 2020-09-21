@@ -37,6 +37,7 @@ public class BootStrapData implements CommandLineRunner {
         this.groupRepository = groupRepository;
     }
 
+    private Application application; ///this is to be used in the topic to avoid passing the application id
 
     @Override
     public void run(String... args) throws Exception {
@@ -45,28 +46,29 @@ public class BootStrapData implements CommandLineRunner {
 
         Application app = new Application( "app1", "This is an example of and LDAP app", conn);
         applicationRepository.save(app);
+        application = app;
 
         // Create 5 base groups
         for(int j=1; j<=5; j++) {
-            Group group = new Group("{\"name\": \"grupito" + j + "\", \"description\":\"description"+j+"\"}");
-            groupRepository.save(group);
+            String groupValue = "{\"name\": \"grupito" + j + "\", \"description\":\"description"+j+"\"}";
+            this.template.send("createGroup", groupValue);
         }
 
         // Create 5 accounts
         for(int i=1; i<=5; i++) {
-            Account account = new Account("{\"name\": \"pablito" + i + "\", \"mail\":\"pablito"+i+"@gmail.com\"}", app);
-            accountRepository.save(account);
+            String accountValue = "{\"name\": \"pablito" + i + "\", \"mail\":\"pablito"+i+"@gmail.com\"}";
+            this.template.send("createAccount", accountValue);
         }
 
         // Add 5 accounts (newly created) into each of the groups
-        Iterable<Group> groupList = groupRepository.findAll();
+        /*Iterable<Group> groupList = groupRepository.findAll();
         Iterable<Account> accountList = accountRepository.findAll();
         groupList.forEach(g -> {
             accountList.forEach(a -> {
                 g.setAccount(a);
                 groupRepository.save(g);
             });
-        });
+        });*/
 
         System.out.println("Started bootstrap!");
         System.out.println("Number of connections: " + connectionRepository.count());
@@ -74,14 +76,11 @@ public class BootStrapData implements CommandLineRunner {
         System.out.println("Number of accounts: " + accountRepository.count());
         System.out.println("Number of groups: " + groupRepository.count());
 
-        this.template.send("myTopic", "foo1");
-        this.template.send("myTopic", "foo2");
-        this.template.send("myTopic", "foo3");
         latch.await(60, TimeUnit.SECONDS);
         logger.info("All received");
     }
 
-    //////
+    ////// KAFKA STUFF
     public static Logger logger = Logger.getLogger(String.valueOf(BootStrapData.class));
 
     @Autowired
@@ -89,10 +88,25 @@ public class BootStrapData implements CommandLineRunner {
 
     private final CountDownLatch latch = new CountDownLatch(3);
 
-    @KafkaListener(topics = "myTopic")
-    public void listen(ConsumerRecord<?, ?> cr) throws Exception {
-        logger.info(cr.toString());
+    @KafkaListener(topics = "createAccount")
+    public void createAccount(ConsumerRecord<?, ?> cr) throws Exception {
+        Account account = new Account((String)cr.value(),application);
+        accountRepository.save(account);
+        logger.info(account.toString());
         latch.countDown();
     }
 
+    @KafkaListener(topics = "createGroup")
+    public void createGroup(ConsumerRecord<?, ?> cr) throws Exception {
+        Group group = new Group((String)cr.value());
+        groupRepository.save(group);
+        logger.info(group.toString());
+        latch.countDown();
+    }
+
+    @KafkaListener(topics = "addAccountToGroup")
+    public void addAccountToGroup(ConsumerRecord<?, ?> cr) throws Exception {
+        logger.info(cr.toString());
+        latch.countDown();
+    }
 }
