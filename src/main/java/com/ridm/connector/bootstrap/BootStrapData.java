@@ -17,9 +17,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil;
 
 @Component
 public class BootStrapData implements CommandLineRunner {
@@ -41,8 +44,12 @@ public class BootStrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Connection conn = new Connection("ldap", "ldap.tirasa.net.LDAPConnector.jar", "{prop1: something}");
+        Connection conn = new Connection("ldap", "ldap.tirasa.net.LDAPConnector.jar", JacksonUtil.toJsonNode("{\"prop1\": \"something\"}"));
         connectionRepository.save(conn);
+
+       Connection c = connectionRepository.findById(conn.getId()).get();
+
+        System.out.println("Connection retrireved: " + c.getConfigProperties().asText());
 
         Application app = new Application( "app1", "This is an example of and LDAP app", conn);
         applicationRepository.save(app);
@@ -90,7 +97,7 @@ public class BootStrapData implements CommandLineRunner {
 
     @KafkaListener(topics = "createAccount")
     public void createAccount(ConsumerRecord<?, ?> cr) throws Exception {
-        Account account = new Account((String)cr.value(),application);
+        Account account = new Account(JacksonUtil.toJsonNode((String)cr.value()),application);
         accountRepository.save(account);
         logger.info(account.toString());
         latch.countDown();
@@ -98,7 +105,7 @@ public class BootStrapData implements CommandLineRunner {
 
     @KafkaListener(topics = "createGroup")
     public void createGroup(ConsumerRecord<?, ?> cr) throws Exception {
-        Group group = new Group((String)cr.value());
+        Group group = new Group(JacksonUtil.toJsonNode((String)cr.value()));
         groupRepository.save(group);
         logger.info(group.toString());
         latch.countDown();

@@ -1,12 +1,13 @@
 package com.ridm.connector.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import com.vladmihalcea.hibernate.type.json.*;
 
 @Entity
 @Table(name="connections")
@@ -20,13 +21,14 @@ public class Connection {
     private String name;
     @Column(name="description")
     private String description;
-    @Column(name="config_properties")
-    private String configProperties; // This should be mapped into a JSON column!
+    @Type(type="json-node")
+    @Column(name="config_properties", columnDefinition = "JSON")
+    private JsonNode configProperties;
 
     public Connection() {
     }
 
-    public Connection(String name, String description, String configProperties) {
+    public Connection(String name, String description, JsonNode configProperties) {
         this.name = name;
         this.description = description;
         this.configProperties = configProperties;
@@ -48,11 +50,11 @@ public class Connection {
         this.description = description;
     }
 
-    public String getConfigProperties() {
+    public JsonNode getConfigProperties() {
         return configProperties;
     }
 
-    public void setConfigProperties(String configProperties) {
+    public void setConfigProperties(JsonNode configProperties) {
         this.configProperties = configProperties;
     }
 
@@ -70,7 +72,7 @@ public class Connection {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", configProperties='" + configProperties +
+                ", configProperties='" + configProperties.asText() +
                 '}';
     }
 

@@ -1,5 +1,8 @@
 package com.ridm.connector.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -11,8 +14,9 @@ public class Account {
     @Column(name="account_id")
     private Long id;
 
-    @Column(name = "account_info") // JSON containing the information of the account
-    private String accountInfo;
+    @Type(type="json-node")
+    @Column(name="account_info", columnDefinition = "JSON")
+    private JsonNode accountInfo;
 
     @ManyToOne
     @JoinColumn(name = "application_id")
@@ -21,7 +25,7 @@ public class Account {
     public Account() {
     }
 
-    public Account(String accountInfo, Application application) {
+    public Account(JsonNode accountInfo, Application application) {
         this.id = id;
         this.accountInfo = accountInfo;
         this.application = application;
@@ -35,11 +39,11 @@ public class Account {
         this.id = id;
     }
 
-    public String getAccountInfo() {
+    public JsonNode getAccountInfo() {
         return accountInfo;
     }
 
-    public void setAccountInfo(String accountInfo) {
+    public void setAccountInfo(JsonNode accountInfo) {
         this.accountInfo = accountInfo;
     }
 
@@ -57,7 +61,6 @@ public class Account {
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
         return id.equals(account.id) &&
-                Objects.equals(accountInfo, account.accountInfo) &&
                 Objects.equals(application, account.application);
     }
 

@@ -1,5 +1,8 @@
 package com.ridm.connector.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -11,8 +14,9 @@ public class Group {
     @Column(name="group_id")
     private Long id;
 
-    @Column(name = "group_info") // JSON containing the information of the account
-    private String groupInfo;
+    @Type(type="json-node")
+    @Column(name="group_info", columnDefinition = "JSON")
+    private JsonNode groupInfo;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
@@ -21,7 +25,7 @@ public class Group {
     public Group() {
     }
 
-    public Group(String groupInfo) {
+    public Group(JsonNode groupInfo) {
         this.groupInfo = groupInfo;
     }
 
@@ -33,12 +37,12 @@ public class Group {
         this.id = id;
     }
 
-    public String getGroupInfo() {
+    public JsonNode getGroupInfo() {
         return groupInfo;
     }
 
-    public void setGroupInfo(String accountInfo) {
-        this.groupInfo = accountInfo;
+    public void setGroupInfo(JsonNode groupInfo) {
+        this.groupInfo = groupInfo;
     }
 
     public Account getAccount() {
