@@ -1,0 +1,883 @@
+openapi: 3.0.0
+info:
+  title: ReactiveIDM - Connector Service
+  description: This is the ReactiveIDM Connector Service
+  termsOfService: 'http://paynalli.com/ridm/terms/'
+  contact:
+    email: ridm@paynalli.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080/v1'
+tags:
+  - name: connector
+    description: Connector Configuration Operations
+    externalDocs:
+      description: Find out more about ReacitveIDM Connector Service
+      url: 'http://paynalli.com/ReactiveIDM'
+  - name: provisioning
+    description: >-
+      Provisioning Operations (not to be exposed to end-users, this endpoint
+      needs to be blocked using the PBAC)
+    externalDocs:
+      description: Find out more about ReacitveIDM Provisioning Operations
+      url: 'http://paynalli.com/ReactiveIDM'
+paths:
+  /connector:
+    post:
+      tags:
+      - connector
+      summary: Create Connector Instance with specified ConnectorProperties
+      description: Create Connector Instance with specified ConnectorDetails.
+      operationId: createConnector
+      requestBody:
+        description: body
+        content:
+          application/json:
+            schema:
+              type: object
+        required: false
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorProperties'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+  /connector/all:
+    get:
+      tags:
+      - connector
+      summary: Get a List of all Connectors in the Database (pagination needed)
+      description: Retrieves all Connectors in the database
+      operationId: getAllConnectors
+      responses:
+        200:
+          description: Successfully Operation. Listed ConnectorDetails are the available
+            Connectors in the Database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectorProperties'
+        400:
+          description: Something is wrong
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+      deprecated: false
+  /connector/available_bundles:
+    get:
+      tags:
+      - connector
+      summary: Get all available connector bundles
+      description: Get all available connectors
+      operationId: getConnectorBundles
+      responses:
+        200:
+          description: Successfully Operation.The listed Connector Details are templates
+            of a valid Connector for the available ConnectorBundles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectorProperties'
+        400:
+          description: Something is wrong
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+      deprecated: false
+  /connector/getSchema:
+    post:
+      tags:
+      - connector
+      summary: Get schema for a Connector Instance with specified ConnectorProperties
+      description: Get schema for a Connector Instance with specified ConnectorProperties.
+      operationId: getSchemaConnector
+      requestBody:
+        description: body
+        content:
+          application/json:
+            schema:
+              type: object
+        required: false
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ConnectorProperties was provided
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+  /connector/validate:
+    post:
+      tags:
+      - connector
+      summary: Validate and test a Connector Instance with specified ConnectorProperties
+      description: Validate and test a Connector Instance with specified ConnectorDetails.
+      operationId: validateConnector
+      requestBody:
+        description: body
+        content:
+          application/json:
+            schema:
+              type: object
+        required: false
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ConnectorProperties was provided
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+  /connector/{connectorId}:
+    get:
+      tags:
+      - connector
+      summary: Get connector by connectorId
+      description: Retrieve an connector by connectorId
+      operationId: getConnectorById
+      parameters:
+      - name: connectorId
+        in: path
+        description: Returns a single connector.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorProperties'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Connector cannot be found
+          content: {}
+      deprecated: false
+    put:
+      tags:
+      - connector
+      summary: Update an existing Connector
+      description: Update an existing Connector
+      operationId: updateConnector
+      parameters:
+      - name: connectorId
+        in: path
+        description: The id of the connector to be updated
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: The Connector object that needs to be updated.
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorProperties'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Connector not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - connector
+      summary: Delete connector by id
+      description: Delete an connector by id
+      operationId: deleteConnector
+      parameters:
+      - name: connectorId
+        in: path
+        description: The id of the connector to be deleted.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorProperties'
+        204:
+          description: No Content
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+  /connector/{connectorId}/test:
+    get:
+      tags:
+      - connector
+      summary: Test connector by connectorId
+      description: Test the connector identified by the connId. The ConnectorProperties
+        are populated with the ConnectorSchema if successful
+      operationId: testConnectorById
+      parameters:
+      - name: connectorId
+        in: path
+        description: Returns a single connector.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Successful operation. The ConnectorProperties are populated
+            with the ConnectorSchema if successful
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Connector cannot be found
+          content: {}
+      deprecated: false
+  /provisioning/account:
+    post:
+      tags:
+        - provisioning
+      summary: Create an existing Account
+      description: Create an existing Account
+      operationId: createAccount
+      requestBody:
+        description: The Account object that needs to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningType'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+  /provisioning/account/{accountId}:
+    get:
+      tags:
+      - provisioning
+      summary: Get Account by accountId
+      description: Retrieve an Account by accountId
+      operationId: getAccountById
+      parameters:
+      - name: accountId
+        in: path
+        description: Returns a single Account.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningType'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Account cannot be found
+          content: {}
+      deprecated: false
+    put:
+      tags:
+      - provisioning
+      summary: Update an existing Account
+      description: Update an existing Account
+      operationId: updateAccount
+      parameters:
+      - name: accountId
+        in: path
+        description: The id of the provisioning to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The Account object that needs to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisioningTypeAccount'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningType'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Account not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - provisioning
+      summary: Delete provisioning by id
+      description: Delete an provisioning by id
+      operationId: deleteAccount
+      parameters:
+      - name: accountId
+        in: path
+        description: The id of the account to be deleted.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningType'
+        204:
+          description: No Content
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+  /provisioning/account/{appId}/sync:
+    get:
+      tags:
+      - provisioning
+      summary: Trigger Account Sync for the Application identified by appId
+      description: Retrieve an Account by accountId
+      operationId: synchronizeAccounts
+      parameters:
+      - name: appId
+        in: path
+        description: The Application identified by appId.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: date
+        in: query
+        description: Value of date
+        allowEmptyValue: false
+        schema:
+          type: string
+          format: date-time
+      - name: syncType
+        in: query
+        description: Type
+        allowEmptyValue: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProvisioningType'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Account cannot be found
+          content: {}
+      deprecated: false
+  /provisioning/group:
+    post:
+      tags:
+      - provisioning
+      summary: Create an existing Group
+      description: Create an existing Group
+      operationId: createGroup
+      requestBody:
+        description: The Group object that needs to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningTypeGroups'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+  /provisioning/group/{appId}/sync:
+    get:
+      tags:
+      - provisioning
+      summary: Trigger Group Sync for the Application identified by appId
+      description: Retrieve an Group by groupId
+      operationId: synchronizeGroups
+      parameters:
+      - name: appId
+        in: path
+        description: The Application identified by appId.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: date
+        in: query
+        description: Value of date
+        allowEmptyValue: false
+        schema:
+          type: string
+          format: date-time
+      - name: syncType
+        in: query
+        description: Type
+        allowEmptyValue: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProvisioningTypeGroups'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: ´Groups cannot be found
+          content: {}
+      deprecated: false
+  /provisioning/group/{groupId}:
+    get:
+      tags:
+      - provisioning
+      summary: Get Group by groupId
+      description: Retrieve an Group by groupId
+      operationId: getGroupById
+      parameters:
+      - name: groupId
+        in: path
+        description: Returns a single Group.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningType'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Group cannot be found
+          content: {}
+      deprecated: false
+    put:
+      tags:
+      - provisioning
+      summary: Update an existing Group
+      description: Update an existing Group
+      operationId: updateGroup
+      parameters:
+      - name: groupId
+        in: path
+        description: The id of the provisioning to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The Group object that needs to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisioningTypeGroups'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningTypeGroups'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Group not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - provisioning
+      summary: Delete provisioning group by id
+      description: Delete an provisioning group by id
+      operationId: deleteGroup
+      parameters:
+      - name: groupId
+        in: path
+        description: The id of the group to be deleted.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisioningType'
+        204:
+          description: No Content
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+      deprecated: false
+components:
+  schemas:
+    ConnectorProperties:
+      title: ConnectorProperties
+      type: object
+      properties:
+        configurationProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: This is the configuration Properties for the connector
+        connectorId:
+          type: string
+          description: This is the id for the connector
+          format: uuid
+        connectorRef:
+          type: object
+          additionalProperties:
+            type: string
+          description: This is the connectorRef for the connector, that has bundleVersion,
+            bundleName and connectorName as parameters
+        name:
+          type: string
+          description: This is the name for the connector
+        objectTypes:
+          type: object
+          properties: {}
+        operationOptions:
+          type: object
+          properties: {}
+        operationTimeout:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+        poolConfigOption:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+        resultsHandlerConfig:
+          type: object
+          additionalProperties:
+            type: boolean
+        syncFailureHandler:
+          type: object
+          properties: {}
+      description: This correspond with the Connector Provisioner
+    ProvisioningType:
+      title: ProvisioningType
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/ProvisioningTypeAccount'
+        connectorId:
+          type: string
+          description: The connector's ID used for this account
+          format: uuid
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProvisioningTypeGroups'
+        transactionId:
+          type: string
+    ProvisioningTypeAccount:
+      title: ProvisioningTypeAccount
+      required:
+      - name
+      - ownerId
+      type: object
+      properties:
+        additionalProperties:
+          type: object
+          properties: {}
+          description: These are the additional Properties for this account
+        email:
+          type: string
+          description: This is the Account's Owner email (if required)
+        name:
+          type: string
+          description: this is the Account's Name (__NAME__)
+        ownerId:
+          type: string
+          description: This is the UUID (the unique identifier) for the Account's
+            Owner
+      description: This correspond with the Connector __ACCOUNT__ object
+    ProvisioningTypeGroups:
+      title: ProvisioningTypeGroups
+      required:
+      - name
+      type: object
+      properties:
+        accountId:
+          type: string
+          description: This is the UUID (the unique identifier) for the Account this
+            Group belongs to
+        additionalProperties:
+          type: object
+          properties: {}
+          description: These are the additional Properties for this group
+        connectorId:
+          type: string
+          description: The connector's ID used for this account
+          format: uuid
+        name:
+          type: string
+          description: this is the Group's Name (__NAME__)
+      description: This correspond with the Connector __GROUP__ object
+  securitySchemes:
+    jwt:
+      type: http
+      description: JWT Authentication
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - jwt: []
