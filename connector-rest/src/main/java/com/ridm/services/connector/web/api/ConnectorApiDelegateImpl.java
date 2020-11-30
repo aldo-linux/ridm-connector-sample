@@ -1,25 +1,14 @@
-## Generate sources
-```
-./mvnw generate-sources
-```
+package com.ridm.services.connector.web.api;
 
-## Run
-```
-./mvnw spring-boot:run
-```
+import com.ridm.services.connector.web.api.model.ConnectorProperties;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.NativeWebRequest;
 
-## Code Generation Explanation
+import java.util.List;
 
-The generate-sources command will generate the code in the directory: "target/source/java". Since we have specify we want to generate the code using the "delegatePattern>true</delegatePattern>" option, it would generate the Java Interfaces below:
-
-- ConnectorApiDelegate.java
-- ProvisioningApiDelegate.java
-
-Now, we only need to implement the classes accourdingly:
-
-1) ConnectorApiDelegateImpl.java
-
-```
 /*
  TODO: Implement this class ;-)
  */
@@ -51,11 +40,3 @@ public class ConnectorApiDelegateImpl implements ConnectorApiDelegate {
 
     }
 }
-
-```
-
-2) ProvisioningApiDelegateImpl.java
-
-```
-
-```
